@@ -418,3 +418,35 @@ public:
         return lenmax;
     }
 };
+
+class Solution20 {
+public:
+  string simplifyPath(string path) {
+        vector<string>strs;
+        int n = path.size();
+        for(int i =0;i<n;i++){
+            if(path[i]=='/') continue;
+            int j;
+            string temp ="";
+            for(j = i;path[j]!='/'&&j<n;j++){
+                temp += path[j];
+            }
+            if(temp=="."){}
+            else if(temp ==".."){
+                if(!strs.empty()) strs.pop_back();
+            }
+            else{
+                strs.push_back(temp);
+            }
+            i = j;
+        }
+        string ans ="";
+        for(int i =0;i<strs.size();i++)
+        {
+            ans +='/';
+            ans += strs[i];
+        }
+        if(ans == "") ans +='/';
+        return ans;
+    }
+};

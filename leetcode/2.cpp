@@ -3,6 +3,8 @@
 # include<unordered_map>
 # include<algorithm>
 # include<unordered_set>
+# include<climits>
+# include<stack> 
 using namespace std;
 
 class Solution01 {
@@ -337,6 +339,158 @@ public:
             ans = max(ans,x-*it);
             if(2*ans> s.size()) break;
         }
+        return ans;
+    }
+};
+
+class Solution15 {
+public:
+    vector<string> summaryRanges(vector<int>& nums) {
+        int now;
+        int last=0;
+        int n = nums.size();
+        vector<string> result;
+        if(n == 0) return result;
+        for( now =1;now<n;now++){
+            
+            if((long)nums[now]-(long)nums[now-1]!=1){
+                string temp = "";
+                if(now-1==last) temp += to_string(nums[last]);
+                else {
+                   temp += to_string(nums[last]);
+                   temp += "->";
+                   temp += to_string(nums[now-1]);
+                }
+                result.push_back(temp);
+                last = now;
+            }
+        }
+        
+                string temp = "";
+                if(now-1==last) temp += to_string(nums[last]);
+                else {
+                   temp += to_string(nums[last]);
+                   temp += "->";
+                   temp += to_string(nums[now-1]);
+                }
+                result.push_back(temp);
+                return result;
+    
+    }
+};
+
+class Solution16 {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+         sort (intervals.begin(), intervals.end());
+         vector<vector<int>> result;
+         int n = intervals.size();
+         for(int i =0 ;i<n ;i++){
+            if(result.empty()||intervals[i][0]>result.back()[1]){
+                result.push_back(vector<int>{intervals[i][0],intervals[i][1]});
+            }else{
+                result.back()[1]=max(result.back()[1],intervals[i][1]);
+            }
+         }
+         return result;
+    }
+};
+
+
+class Solution17 {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        vector<vector<int>> result;
+        int i =0;
+        int len =intervals.size();
+        while(i<len && intervals[i][1]<newInterval[0])
+        {
+            result.push_back(intervals[i]);
+            i++;
+        }
+
+        while(i<len && intervals[i][0]<=newInterval[1]){
+            newInterval[0] = min(newInterval[0],intervals[i][0]);
+            newInterval[1] = max(newInterval[1],intervals[i][1]);
+            i++;
+        }
+        result.push_back(newInterval);
+        while(i<len) {
+            result.push_back(intervals[i]);
+            i++;
+        }
+        return result;
+    }
+};
+
+class Solution18 {
+public:
+    int findMinArrowShots(vector<vector<int>>& points) {
+        int ans =0;
+        sort(points.begin(),points.end(),[](const vector<int>& a , const vector<int>& b){
+            return a[1] < b[1];
+        });
+        long long pre =LLONG_MIN;
+        int n = points.size();
+        for(int i=0 ; i<n; i++){
+            if(points[i][0]<=pre) continue;
+            ans ++;
+            pre = points[i][1];
+        }
+        return ans;
+    }
+};
+
+class Solution19 {
+public:
+    bool isValid(string s) {
+        unordered_map<char, char> c2c{{'(',')'},{'{','}'},{'[',']'}};
+        stack<char> mstack;
+        for(int i=0;s[i];i++){
+            if(c2c.find(s[i])!=c2c.end()){
+                mstack.push(s[i]);
+            }else{
+                if(mstack.empty()) return false;
+                else{
+                    char temp = mstack.top();
+                    if(s[i]!=c2c[temp]) return false;
+                    mstack.pop();
+                }
+            }
+        }
+        return mstack.empty();
+    }
+};
+
+
+class Solution20 {
+public:
+    string simplifyPath(string path) {
+        vector<string>strs;
+        int n = path.size();
+        for(int i =0;i<n;i++){
+            if(path[i]=='/') continue;
+            int j;
+            string temp ="";
+            for(j = i;path[j]!='/'&&j<n;j++){
+                temp += path[j];
+            }
+            if(temp=="."){}
+            else if(temp ==".."){
+                if(!strs.empty()) strs.pop_back();
+            }
+            else{
+                strs.push_back(temp);
+            }
+            i = j;
+        }
+        string ans ="";
+        for(int i =0;i<strs.size();i++)
+        {
+            ans +='/';
+            ans += strs[i];
+        }
+        if(ans == "") ans +='/';
         return ans;
     }
 };
