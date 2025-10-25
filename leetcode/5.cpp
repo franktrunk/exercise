@@ -582,3 +582,199 @@ public:
         return left;
     }
 };
+
+
+
+
+
+
+class Node {
+public:
+    bool val;
+    bool isLeaf;
+    Node* topLeft;
+    Node* topRight;
+    Node* bottomLeft;
+    Node* bottomRight;
+    
+    Node() {
+        val = false;
+        isLeaf = false;
+        topLeft = NULL;
+        topRight = NULL;
+        bottomLeft = NULL;
+        bottomRight = NULL;
+    }
+    
+    Node(bool _val, bool _isLeaf) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = NULL;
+        topRight = NULL;
+        bottomLeft = NULL;
+        bottomRight = NULL;
+    }
+    
+    Node(bool _val, bool _isLeaf, Node* _topLeft, Node* _topRight, Node* _bottomLeft, Node* _bottomRight) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = _topLeft;
+        topRight = _topRight;
+        bottomLeft = _bottomLeft;
+        bottomRight = _bottomRight;
+    }
+};
+
+
+class Solution14 {
+private:
+    vector<vector<int>> grid;
+    Node* dfs(int lx,int ly,int rx,int ry){
+        bool flag = true;
+        int start = grid[lx][ly];
+        for(int i = lx;i<=rx;i++){
+            for(int j = ly; j<=ry&&flag; j++){
+                if(grid[i][j]!=start)
+                flag = false;
+            }
+        }
+        if(flag) return new Node(start==1,true);
+        Node* root = new Node(start==1 , false);
+        int dx = (rx-lx)/2;
+        int dy = (ry-ly)/2;
+        root->topLeft = dfs(lx,ly,lx+dx,ly+dy);
+        root->topRight = dfs(lx,ly+dy+1,lx+dx,ry);
+        root->bottomLeft = dfs(lx+dx+1,ly,rx,ly+dy);
+        root ->bottomRight = dfs(lx+dx+1,ly+dy+1,rx,ry);
+        return root;
+    }
+public:
+    Node* construct(vector<vector<int>>& grid) {
+        this->grid = grid;
+        int n = grid.size();
+        return dfs(0,0,n-1,n-1);
+    }
+};
+
+
+class Solution15 {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        int left =0;
+        int m = matrix.size();
+        int n = matrix[0].size();
+        int right = m*n;
+        while(left<right){
+            int mid = (left+right)/2;
+            int row = mid/n;
+            int col = mid%n;
+            if(matrix[row][col]<target){
+                left = mid +1;
+            }else{
+                right = mid;
+            }   
+        }
+        if(left>=m*n) return false;
+        return  target == matrix[left/n][left%n];
+    }
+};
+
+class Solution16 {
+public:
+    int findPeakElement(vector<int>& nums) {
+        int left = 0;
+        int right = nums.size()-1;
+        while(left<right){
+            int m = (left+right)/2;
+            if(nums[m]<nums[m+1]){
+                left = m+1;
+            }else{
+                right = m;
+            }
+        }
+        return left;
+    }
+};
+
+class Solution17 {
+public:
+    int search(vector<int>& nums, int target) {
+        int left = 0;
+        int right = nums.size()-1;
+        while(left<=right){
+            int mid = left +(right-left)/2;
+            if(nums[mid] == target) return mid;
+            if(nums[mid]>=nums[left]){
+                if(nums[left]<=target&& nums[mid]>target){
+                    right = mid-1;
+                }
+                else{
+                    left = mid +1;
+                }
+            }
+            else{
+                if(nums[right]>=target && nums[mid]<target){
+                    left = mid +1;
+                }
+                else 
+                right = mid -1;
+            }
+        }
+        return -1;
+    }
+};
+
+class Solution18 {
+
+private:
+int lower_bound(vector<int>& nums, int target) {
+    int left = -1;
+    int right = nums.size();
+    while(left+1<right){
+        int mid = left +(right-left)/2;
+        if(nums[mid]>=target){
+            right = mid;
+        }  else{
+            left = mid;
+        }
+    }
+    return right;
+}
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        int start = lower_bound(nums,target);
+        if(start == nums.size()||nums[start]!=target)
+        return {-1,-1};
+        int end = lower_bound(nums,target+1)-1;
+        return {start,end};
+    }
+};
+
+
+class Solution19 {
+public:
+    int findMin(vector<int>& nums) {
+        int left = -1;
+        int right = nums.size()-1;
+        while(left+1<right){
+            int mid = left +(right-left)/2;
+            (nums[mid] < nums.back()? right:left) = mid;
+        }
+        return nums[right];
+    }
+};
+
+class Solution20 {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        int cnt =1;
+        for(int i = digits.size()-1;i>=0;i--){
+            int temp = digits[i] +cnt;
+            digits[i] = temp%10;
+            cnt = temp/10;
+        }
+        if(cnt ==1)
+        digits.insert(digits.begin(),1);
+        return digits;
+    }
+};
