@@ -295,3 +295,219 @@ public:
     }
 };
 };
+
+class Solution15 {
+
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int>ans(amount+1,-1);
+        ans[0] = 0;
+        for(int i =0;i<coins.size()&&i<=amount;i++){
+            if(coins[i]<=amount)
+            ans[coins[i]]=1;
+        }
+        for(int i =1;i<=amount;i++){
+            for(int j =0;j<coins.size();j++){
+                int index = i-coins[j];
+                if(index>0&&ans[index]>0){
+                    if(ans[i]<0) ans[i]=ans[index]+1;
+                    else ans[i] = min(ans[i],ans[index]+1);
+                }
+            }
+        }
+        return ans[amount];
+    }
+
+        int coinChange2(vector<int>& coins, int amount) {
+        vector<int>ans(amount+1,-1);
+        ans[0]=0;
+        for(int i =0;i<coins.size();i++){
+            for(int j = coins[i];j<=amount;j++){
+                if(ans[j-coins[i]]<0) continue;
+                if(ans[j]<0) ans[j]=ans[j-coins[i]]+1;
+                else ans[j] = min(ans[j],ans[j-coins[i]]+1); 
+            }
+        }
+        return ans[amount];
+    }
+};
+
+class Solution16 {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ans(n,1);
+        for(int i =1;i<n;i++){
+            for(int j=0;j<i;j++){
+                if(nums[i]>nums[j])
+                ans[i] = max(ans[i],ans[j]+1);
+            }
+        }
+        int longest = ans[0];
+        for(int i=1;i<n;i++)
+        longest = max(longest,ans[i]);
+        return longest;
+    }
+};
+
+class Solution17 {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        vector<vector<int>> dp;
+        int n = triangle.size();
+        for(int i =0;i<n;i++)
+        dp.push_back(vector<int>(triangle[i].size(),INT_MAX/2));
+        dp[0][0] = triangle[0][0];
+        for(int i =0;i<n-1;i++){
+            for(int j=0;j<triangle[i].size();j++){
+                dp[i+1][j] = min(dp[i+1][j],dp[i][j]+triangle[i+1][j]);
+                dp[i+1][j+1] = min(dp[i+1][j+1],dp[i][j]+triangle[i+1][j+1]);
+            }
+        }
+        int min = dp[n-1][0];
+        for(int i=1;i<triangle[n-1].size();i++){
+            if(dp[n-1][i]<min) min = dp[n-1][i];
+        }
+        return min;
+    }
+    int minimumTotal2(vector<vector<int>>& triangle) {
+        vector<int> f = triangle.back();
+        for(int i = triangle.size()-2;i>=0;i--){
+            for(int j=0;j<triangle[i].size();j++){
+                f[j] = min(f[j],f[j+1])+triangle[i][j];
+            }
+        }
+        return f[0];
+    }
+
+};
+
+class Solution18 {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<int> f(n);
+        f[n-1] = grid[m-1][n-1];
+        for(int i = n-2;i>=0;i--){
+            f[i]= f[i+1]+grid[m-1][i];
+        }
+
+        for(int i=m-2;i>=0;i--){
+            f[n-1] = f[n-1]+grid[i][n-1];
+            for(int j=n-2;j>=0;j--){
+                f[j]=min(f[j+1],f[j])+grid[i][j];
+            }
+        }
+        return f[0];
+    }
+};
+
+class Solution19 {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size();
+        int n = obstacleGrid[0].size();
+        vector<vector<int>>dp(m,vector<int>(n,0));
+        dp[0][0]=1;
+        if(obstacleGrid[0][0]) return 0;
+        if(obstacleGrid[m-1][n-1]) return 0;
+        for(int i=0;i<m;i++){
+            for(int j =0 ;j<n;j++){
+                int row = i;
+                int col = j-1;
+                if(row>=0&&row<m&&col>=0&&col<n){
+                    if(!obstacleGrid[row][col])
+                    dp[i][j]+=dp[row][col];
+                }
+                row =i-1;
+                col = j;
+                if(row>=0&&row<m&&col>=0&&col<n){
+                    if(!obstacleGrid[row][col])
+                    dp[i][j]+=dp[row][col];
+                }                
+            }    
+        
+        }
+        return dp[m-1][n-1];
+    }
+    
+    int uniquePathsWithObstacles2(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size();
+        int n = obstacleGrid[0].size();
+        if(obstacleGrid[0][0]) return 0;
+        if(obstacleGrid[m-1][n-1]) return 0;
+        vector<int>dp(n,0);
+        dp[0]=1;
+        for(int i =1;i<n;i++) if(!obstacleGrid[0][i-1]) dp[i] += dp[i-1];
+        
+        for(int i =1;i<m;i++){
+            if(obstacleGrid[i-1][0])dp[0] =0;
+            for(int j=1;j<n;j++){
+                if(obstacleGrid[i-1][j])dp[j]=0;
+                if(!obstacleGrid[i][j-1])dp[j]+=dp[j-1]; 
+            }  
+        }
+        return dp[n-1];
+    }
+};
+
+
+class Solution20 {
+public:
+    string longestPalindrome(string s) {
+        int strlen = s.length();
+        if(strlen==0) return "";
+        int left =0;
+        int right = 0;
+        int maxstart =0;
+        int maxlen=0;
+        int len =1;
+        for(int i=0;i<strlen;i++){
+            left=i-1;
+            right = i+1;
+            while(left>=0&&s[left]==s[i]){
+                left--;
+                len++;
+            }
+            while(right<strlen&&s[right]==s[i]){
+                right++;
+                len++;
+            }
+            while(left>=0 && right<strlen&&s[right]==s[left]){
+                len+=2;
+                right++;
+                left--;
+            }
+            if(len>maxlen){
+                maxlen = len;
+                maxstart = left;
+            }
+            len =1;
+        }
+        return s.substr(maxstart+1,maxlen);
+    }
+
+    string longestPalindrome(string s) {
+        int n = s.length();
+        if(n<2) return s;
+        vector<vector<bool>>dp(n,vector<bool>(n,false));
+        int maxsatrt=0;
+        int maxlen=1;
+        for(int r =1;r<n;r++){
+            for(int l=0;l<r;l++){
+                if(s[l]==s[r]){
+                    if(r-l<=2||dp[l+1][r-1]){
+                        dp[l][r] =true;
+                        if(r-l+1>maxlen){
+                            maxsatrt = l;
+                            maxlen = r-l+1;
+                        }
+                    }
+                }
+            }
+        }
+        return s.substr(maxsatrt,maxlen);
+    }
+};
+
